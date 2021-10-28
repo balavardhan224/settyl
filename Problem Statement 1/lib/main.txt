@@ -1,0 +1,365 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parking/screens/page1.dart';
+
+
+void main() => runApp(MyApp());
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter GoogleMaps Demo',
+      theme: ThemeData(
+        primaryColor: Color(0xff6200ee),
+      ),
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget{
+
+  @override
+  State createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: GestureDetector(
+            onTap: (){
+              Navigator.pop(context,true);
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black.withOpacity(0.6),
+              size: 20,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Stack(
+        children: <Widget>[
+          _buildGoogleMap(context),
+          Padding(
+            padding: const EdgeInsets.only(left: 28,top: 100,right: 28,bottom: 10),
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+                side: BorderSide.none,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ListTile(
+                  title: TextField(
+                    enabled: false,
+                    decoration: InputDecoration.collapsed(
+                        hintText: 'Where do you go?',
+                        hintStyle: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[700],
+                            letterSpacing: 0.2
+                        )
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.search,
+                    size: 27,
+                    color: Colors.orange[400],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: _visibility,
+            child: DraggableSheet()
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _visibility = false;
+  _showBottomSheet(){
+    
+  }
+}
+Widget _buildGoogleMap(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition:  CameraPosition(target: LatLng(17.6351, 78.4022), zoom: 12),
+        
+        // markers: {
+        //   newyork1Marker,newyork2Marker,newyork3Marker,gramercyMarker,bernardinMarker,blueMarker
+          
+        // },
+        markers: _createMarker(),
+        
+      ),
+      
+    );
+      
+  }
+  Set<Marker> _createMarker() {
+    // ignore: prefer_collection_literals
+    return <Marker>[
+      Marker(
+          markerId: MarkerId('home'),
+          position: LatLng(17.60012, 78.41868),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+    BitmapDescriptor.hueViolet,
+  ),
+          onTap: () {
+            _showBottomSheet();
+          }
+          ),
+          Marker(
+          markerId: MarkerId('gandi'),
+          position: LatLng(17.5752, 78.4232),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+    BitmapDescriptor.hueViolet,
+  ),
+          onTap: () {
+          }
+          ),
+          Marker(
+          markerId: MarkerId('home1'),
+          position: LatLng(17.59905, 78.41721),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+    BitmapDescriptor.hueViolet,
+  ),
+          onTap: () {
+          }
+          )
+          
+    ].toSet();
+  }
+
+
+
+
+
+
+
+
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:parking/screens/page1.dart';
+import 'package:quick_park/Widget/BottomSheet.dart';
+
+class MapView extends StatefulWidget{
+
+  @override
+  State createState() => _MapViewState();
+}
+
+class _MapViewState extends State<MapView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: GestureDetector(
+            onTap: (){
+              Navigator.pop(context,true);
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black.withOpacity(0.6),
+              size: 20,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Stack(
+        children: <Widget>[
+          FlutterMap(
+              options:  MapOptions(
+                  center: LatLng(23.5231,86.23143),
+                  minZoom: 13.5,
+                  maxZoom: 14.5,
+                  zoom: 14.0
+              ),
+              layers: [
+                TileLayerOptions(
+                    urlTemplate:
+                    "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+                    subdomains:['mt0','mt1','mt2','mt3']
+                ),
+                MarkerLayerOptions(
+                  markers: [
+                    Marker(
+                        point: LatLng(23.521,86.23043),
+                        builder: (context) {
+                          return GestureDetector(
+                            onTap: (){
+                              _showBottomSheet();
+                            },
+                              child: MeMarker()
+                          );
+                        }
+                    ),
+                    Marker(
+                      width: 40,
+                      height: 40,
+                      point: LatLng(23.5301,86.23643),
+                      builder: (context) {
+                        return CustomMarker(Icons.local_parking,'34');
+                      }
+                    ),
+                    Marker(
+                        width: 40,
+                        height: 40,
+                        point: LatLng(23.5361,86.22283),
+                        builder: (context) {
+                          return CustomMarker(Icons.local_bar,'10');
+                        }
+                    ),
+                    Marker(
+                        width: 40,
+                        height: 40,
+                        point: LatLng(23.5051,86.22383),
+                        builder: (context) {
+                          return CustomMarker(Icons.local_movies,'16');
+                        }
+                    ),
+                    Marker(
+                        width: 40,
+                        height: 40,
+                        point: LatLng(23.5161,86.24283),
+                        builder: (context) {
+                          return CustomMarker(Icons.restaurant_menu,'24');
+                        }
+                    )
+                  ],
+                ),
+              ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 28,top: 100,right: 28,bottom: 10),
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+                side: BorderSide.none,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ListTile(
+                  title: TextField(
+                    enabled: false,
+                    decoration: InputDecoration.collapsed(
+                        hintText: 'Where do you go?',
+                        hintStyle: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[700],
+                            letterSpacing: 0.2
+                        )
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.search,
+                    size: 27,
+                    color: Colors.orange[400],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: _visibility,
+            child: DraggableSheet()
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _visibility = false;
+  _showBottomSheet(){
+    setState(() {
+      _visibility = _visibility ? false : true;
+    });
+  }
+}
+class CustomMarker extends StatelessWidget{
+
+  IconData _icon;
+  String _space;
+
+  CustomMarker(this._icon,this._space);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 26),
+            child: Center(child: Icon(Icons.location_on,color: Colors.white,))
+        ),
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4.4)
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Icon(_icon,size: 13.4,color: Colors.grey[800],),
+              Text(
+                  '$_space',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class MeMarker extends StatelessWidget{
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        CircleAvatar(
+          backgroundColor: Colors.black.withOpacity(0.1),
+        ),
+        Center(
+          child: CircleAvatar(
+            radius: 5,
+            backgroundColor: Colors.black,
+          ),
+        )
+      ],
+    );
+  }
+}
